@@ -1,0 +1,135 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up MaNoUmi",
+        "description": "What do you want to set up?",
+        "menu_options": {
+          "device": "Track a device (e.g. iPhone)",
+          "hub": "Home: reference devices and people per room"
+        }
+      },
+      "device": {
+        "title": "Set up MaNoUmi",
+        "description": "Room detection for a Bluetooth device. Requires the device to be set up via Private BLE Device (iPhone/Apple Watch via IRK).",
+        "data": {
+          "name": "Name",
+          "tracker": "Private BLE tracker",
+          "areas": "Rooms",
+          "notify_service": "Notify service for your phone (optional)"
+        },
+        "data_description": {
+          "areas": "Rooms with Bluetooth scanners are preselected. Rooms without a scanner can be added – every room is detected once it has been calibrated.",
+          "notify_service": "Start and end of a calibration always create a Home Assistant notification. With a notify service (e.g. notify.mobile_app_…) also as a push to your phone."
+        }
+      },
+      "hub": {
+        "title": "MaNoUmi home",
+        "description": "Once per installation. Counts how many tracked devices are in each room and uses stationary BLE devices as reference: if the scanners suddenly hear them weaker or stronger, this is removed from all measurements – the calibration stays valid.",
+        "data": {
+          "anchors": "Reference devices"
+        },
+        "data_description": {
+          "anchors": "Stationary Bluetooth devices (e.g. thermometers). Do not move them; after moving one, press “Re-capture baseline”."
+        }
+      }
+    },
+    "error": {
+      "no_areas": "Select at least one room.",
+      "anchor_no_ble": "At least one device has no Bluetooth address.",
+      "anchor_is_scanner": "Scanners cannot be reference devices at the same time."
+    },
+    "abort": {
+      "already_configured": "This tracker is already set up.",
+      "already_hub": "The home is already set up."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Rooms",
+        "data": {
+          "areas": "Rooms",
+          "notify_service": "Notify service for your phone (optional)",
+          "anchors": "Reference devices",
+          "capture": "Record measurements"
+        },
+        "data_description": {
+          "notify_service": "Start and end of a calibration always create a Home Assistant notification. With a notify service (e.g. notify.mobile_app_…) also as a push to your phone.",
+          "anchors": "Stationary Bluetooth devices (e.g. thermometers). Do not move them; after moving one, press “Re-capture baseline”.",
+          "capture": "Writes all measurement windows (reference and tracked devices) to /config/manoumi/capture.jsonl – for analysis. Max 20 MB, then rotated."
+        },
+        "description": "{status}"
+      }
+    },
+    "error": {
+      "no_areas": "Select at least one room.",
+      "anchor_no_ble": "At least one device has no Bluetooth address.",
+      "anchor_is_scanner": "Scanners cannot be reference devices at the same time."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "raum": {
+        "name": "Room"
+      },
+      "etage": {
+        "name": "Floor"
+      },
+      "personen": {
+        "name": "People {area}"
+      },
+      "drift": {
+        "name": "Scanner drift"
+      }
+    },
+    "select": {
+      "kalibrieren": {
+        "name": "Calibrate"
+      },
+      "kalibriermodus": {
+        "name": "Calibration mode",
+        "state": {
+          "neu": "New (replace room)",
+          "ergaenzen": "Add (another position)"
+        }
+      }
+    },
+    "button": {
+      "gelerntes_zuruecksetzen": {
+        "name": "Reset learned data"
+      },
+      "ausgangslage_neu": {
+        "name": "Re-capture baseline"
+      }
+    }
+  },
+  "selector": {
+    "mode": {
+      "options": {
+        "neu": "New (replace room)",
+        "ergaenzen": "Add (another position)"
+      }
+    }
+  },
+  "services": {
+    "calibrate": {
+      "name": "Calibrate room",
+      "description": "Learns the signal pattern of a room. Stay in the room and move normally for the duration.",
+      "fields": {
+        "room": {
+          "name": "Room",
+          "description": "Name or area ID of the room."
+        },
+        "mode": {
+          "name": "Mode",
+          "description": "New replaces the room, Add adds a position. Defaults to the calibration mode select."
+        },
+        "duration": {
+          "name": "Duration",
+          "description": "Calibration duration in seconds."
+        }
+      }
+    }
+  }
+}

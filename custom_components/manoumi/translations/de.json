@@ -1,0 +1,135 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "MaNoUmi einrichten",
+        "description": "Was soll eingerichtet werden?",
+        "menu_options": {
+          "device": "Gerät verfolgen (z.B. iPhone)",
+          "hub": "Haus: Referenzgeräte und Personen je Raum"
+        }
+      },
+      "device": {
+        "title": "MaNoUmi einrichten",
+        "description": "Raumerkennung für ein Bluetooth-Gerät. Voraussetzung: das Gerät ist über Private BLE Device eingebunden (iPhone/Apple Watch per IRK).",
+        "data": {
+          "name": "Name",
+          "tracker": "Private-BLE-Tracker",
+          "areas": "Räume",
+          "notify_service": "Benachrichtigung aufs Handy (optional)"
+        },
+        "data_description": {
+          "areas": "Vorausgewählt sind die Räume mit Bluetooth-Scannern. Räume ohne Scanner können dazu – erkannt wird jeder Raum, sobald er einmal kalibriert ist.",
+          "notify_service": "Bei Start und Ende einer Kalibrierung kommt immer eine Benachrichtigung in Home Assistant. Mit einem notify-Dienst (z.B. notify.mobile_app_…) zusätzlich als Push aufs Handy."
+        }
+      },
+      "hub": {
+        "title": "MaNoUmi Haus",
+        "description": "Einmal pro Installation. Zählt, wie viele verfolgte Geräte in jedem Raum sind, und nutzt fest stehende BLE-Geräte als Referenz: Hören die Scanner diese plötzlich schwächer oder stärker, wird das aus allen Messungen herausgerechnet – die Kalibrierung bleibt gültig.",
+        "data": {
+          "anchors": "Referenzgeräte"
+        },
+        "data_description": {
+          "anchors": "Fest stehende Bluetooth-Geräte (z.B. Thermometer). Nicht bewegen; nach dem Umstellen „Ausgangslage neu aufnehmen“ drücken."
+        }
+      }
+    },
+    "error": {
+      "no_areas": "Mindestens einen Raum wählen.",
+      "anchor_no_ble": "Mindestens ein Gerät hat keine Bluetooth-Adresse.",
+      "anchor_is_scanner": "Scanner können nicht gleichzeitig Referenzgerät sein."
+    },
+    "abort": {
+      "already_configured": "Dieser Tracker ist schon eingerichtet.",
+      "already_hub": "Das Haus ist schon eingerichtet."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Räume",
+        "data": {
+          "areas": "Räume",
+          "notify_service": "Benachrichtigung aufs Handy (optional)",
+          "anchors": "Referenzgeräte",
+          "capture": "Messdaten aufzeichnen"
+        },
+        "data_description": {
+          "notify_service": "Bei Start und Ende einer Kalibrierung kommt immer eine Benachrichtigung in Home Assistant. Mit einem notify-Dienst (z.B. notify.mobile_app_…) zusätzlich als Push aufs Handy.",
+          "anchors": "Fest stehende Bluetooth-Geräte (z.B. Thermometer). Nicht bewegen; nach dem Umstellen „Ausgangslage neu aufnehmen“ drücken.",
+          "capture": "Schreibt alle Messfenster (Referenzgeräte und verfolgte Geräte) nach /config/manoumi/capture.jsonl – für die Auswertung. Max. 20 MB, dann wird rotiert."
+        },
+        "description": "{status}"
+      }
+    },
+    "error": {
+      "no_areas": "Mindestens einen Raum wählen.",
+      "anchor_no_ble": "Mindestens ein Gerät hat keine Bluetooth-Adresse.",
+      "anchor_is_scanner": "Scanner können nicht gleichzeitig Referenzgerät sein."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "raum": {
+        "name": "Raum"
+      },
+      "etage": {
+        "name": "Etage"
+      },
+      "personen": {
+        "name": "Personen {area}"
+      },
+      "drift": {
+        "name": "Scanner-Drift"
+      }
+    },
+    "select": {
+      "kalibrieren": {
+        "name": "Kalibrieren"
+      },
+      "kalibriermodus": {
+        "name": "Kalibriermodus",
+        "state": {
+          "neu": "Neu (Raum ersetzen)",
+          "ergaenzen": "Ergänzen (weitere Position)"
+        }
+      }
+    },
+    "button": {
+      "gelerntes_zuruecksetzen": {
+        "name": "Gelerntes zurücksetzen"
+      },
+      "ausgangslage_neu": {
+        "name": "Ausgangslage neu aufnehmen"
+      }
+    }
+  },
+  "selector": {
+    "mode": {
+      "options": {
+        "neu": "Neu (Raum ersetzen)",
+        "ergaenzen": "Ergänzen (weitere Position)"
+      }
+    }
+  },
+  "services": {
+    "calibrate": {
+      "name": "Raum kalibrieren",
+      "description": "Lernt das Signalmuster eines Raums an. Während der Dauer im Raum bleiben und sich normal bewegen.",
+      "fields": {
+        "room": {
+          "name": "Raum",
+          "description": "Name oder Area-ID des Raums."
+        },
+        "mode": {
+          "name": "Modus",
+          "description": "Neu ersetzt den Raum, Ergänzen fügt eine Position hinzu. Ohne Angabe gilt der Kalibriermodus-Select."
+        },
+        "duration": {
+          "name": "Dauer",
+          "description": "Kalibrierdauer in Sekunden."
+        }
+      }
+    }
+  }
+}

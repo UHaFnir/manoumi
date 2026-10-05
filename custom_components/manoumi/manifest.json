@@ -1,0 +1,14 @@
+{
+  "domain": "manoumi",
+  "name": "MaNoUmi",
+  "after_dependencies": ["private_ble_device"],
+  "codeowners": ["@UHaFnir"],
+  "config_flow": true,
+  "dependencies": ["bluetooth"],
+  "documentation": "https://github.com/UHaFnir/manoumi",
+  "integration_type": "helper",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/UHaFnir/manoumi/issues",
+  "requirements": [],
+  "version": "0.5.0"
+}

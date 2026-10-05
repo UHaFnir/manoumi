@@ -1,0 +1,24 @@
+calibrate:
+  target:
+    entity:
+      integration: manoumi
+      domain: sensor
+  fields:
+    room:
+      required: true
+      selector:
+        text:
+    mode:
+      selector:
+        select:
+          options:
+            - "neu"
+            - "ergaenzen"
+          translation_key: mode
+    duration:
+      default: 60
+      selector:
+        number:
+          min: 30
+          max: 1800
+          unit_of_measurement: s
