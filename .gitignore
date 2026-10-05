@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.DS_Store
+
+.env
+.env.deploy
+
+# Interne Notizen/Anweisungen, nicht fuer die Veroeffentlichung
+CLAUDE.md
+docs/NOTES.md
+docs/SPEC.md
