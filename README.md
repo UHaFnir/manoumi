@@ -93,7 +93,7 @@ There is also an action, `manoumi.calibrate` (room, mode, duration), so you can 
 ## Good to know
 
 - **Everything stays local.** MaNoUmi only reads what your Bluetooth scanners already report to Home Assistant.
-- **Recording measurements** (Home entry → Configure) writes all measurement windows to `/config/manoumi/capture.jsonl`. This is useful if you want to dig into the numbers or report a problem. It is off by default, and the file never leaves your Home Assistant.
+- **Recording measurements** (Home entry → Configure) writes the measurement windows of tracked devices (reference devices only every 10th window) to `/config/manoumi/capture.jsonl`. This is useful if you want to dig into the numbers or report a problem. It is off by default, and the file never leaves your Home Assistant.
 - **Several people:** add one device entry per phone. The *People ‹room›* sensors in the Home entry add them up.
 - **Language:** the setup dialogs, entity names and notifications are available in English and German. The room sensor's attribute names, the explanation text and the status page are currently German only.
 - **Diagnostics** (device page → Download diagnostics) contains the learned model and the last measurement windows. Attach it if you open an issue.

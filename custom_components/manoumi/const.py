@@ -29,6 +29,7 @@ AWAY_SECONDS = 60.0  # so lange kein Scanner etwas hört → Raum unbekannt („
 # Ohne Auskunft des Anwesenheitssensors hält der Private-BLE-Tracker „Zuhause“ höchstens so lange.
 HOME_HOLD_SECONDS = 600.0
 INVALID_RSSI = -127
+CAPTURE_ANCHOR_EVERY = 10  # Referenzgeräte nur jedes n-te Fenster aufzeichnen
 
 CALIBRATION_DEFAULT_SECONDS = 60  # Erstkalibrierung je Raum; Nachbessern gezielt per „Ergänzen“
 CALIBRATION_MIN_SECONDS = 30

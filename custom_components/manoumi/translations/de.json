@@ -61,7 +61,7 @@
           "notify_service": "Bei Start und Ende einer Kalibrierung kommt immer eine Benachrichtigung in Home Assistant. Mit einem notify-Dienst (z.B. notify.mobile_app_…) zusätzlich als Push aufs Handy.",
           "presence": "Nur wenn Bluetooth eine Minute lang schweigt (z.B. iPhone im Stromsparen): Meldet dieser Sensor „home“, zeigt der Raum „Zuhause“, sonst „Nicht da“. Ideal ist eine Person oder der GPS-Tracker der App – unabhängig von Bluetooth. Ohne Sensor gilt „Zuhause“, solange der Private-BLE-Tracker zuhause ist, höchstens 10 Minuten.",
           "anchors": "Fest stehende Bluetooth-Geräte (z.B. Thermometer). Nicht bewegen; nach dem Umstellen „Ausgangslage neu aufnehmen“ drücken.",
-          "capture": "Schreibt alle Messfenster (Referenzgeräte und verfolgte Geräte) nach /config/manoumi/capture.jsonl – für die Auswertung. Max. 20 MB, dann wird rotiert."
+          "capture": "Schreibt die Messfenster der verfolgten Geräte (Referenzgeräte nur jedes 10. Fenster) nach /config/manoumi/capture.jsonl – für die Auswertung. Max. 20 MB, dann wird rotiert."
         },
         "description": "{status}"
       }

@@ -20,6 +20,7 @@ from homeassistant.helpers.storage import Store
 from .capture import CaptureWriter
 from .collector import RssiCollector
 from .const import (
+    CAPTURE_ANCHOR_EVERY,
     CONF_ANCHORS,
     CONF_CAPTURE,
     DATA_CAPTURE,
@@ -65,6 +66,7 @@ class ManoumiHub:
         self.anchor_seen: dict[str, int] = {}  # Adresse → Zahl gehörter Scanner im letzten Fenster
         self._collector = RssiCollector(hass)
         self._window_end = 0.0
+        self._windows = 0
         self._unsubs: list[CALLBACK_TYPE] = []
 
     @property
@@ -137,7 +139,11 @@ class ManoumiHub:
         if now < self._window_end:
             return
         self._window_end = now + WINDOW_SECONDS
+        self._windows += 1
         capture = self.hass.data.get(DOMAIN, {}).get(DATA_CAPTURE)
+        # Referenzgeräte füllen sonst ~90 % der Aufzeichnung; die Drift ist ohnehin ein 10-min-Mittel.
+        if self._windows % CAPTURE_ANCHOR_EVERY:
+            capture = None
         areas = self.anchor_areas() if capture else {}
         for address, window in self._collector.close(addresses).items():
             self.anchor_seen[address] = window.seen_count
