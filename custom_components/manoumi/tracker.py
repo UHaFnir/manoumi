@@ -34,10 +34,12 @@ from .const import (
     AWAY_SECONDS,
     CONF_AREAS,
     CONF_NOTIFY_SERVICE,
+    CONF_PRESENCE,
     CONF_TRACKER,
     DATA_CAPTURE,
     DATA_HUB,
     DOMAIN,
+    HOME_HOLD_SECONDS,
     MODE_REPLACE,
     POLL_INTERVAL,
     SAVE_DELAY,
@@ -46,6 +48,7 @@ from .const import (
     STORAGE_VERSION,
     WINDOW_SECONDS,
 )
+from .fallback import silent_home
 from .model import (
     CAL_MIN_WINDOWS,
     CAL_TARGET_SEPARABILITY,
@@ -106,8 +109,10 @@ class ManoumiTracker:
         self.sequence: dict[str, float] = {}  # geglättete Trennschärfe je Raum
 
         self.room: str | None = None  # area_id, None = nicht da / unbekannt
-        # Nach dem Start erst „unbekannt“; „nicht da“ erst nach AWAY_SECONDS ohne Signal.
+        # Nach dem Start erst „unbekannt“; nach AWAY_SECONDS ohne Signal „Zuhause“ (at_home)
+        # oder „nicht da“ (away), siehe fallback.py.
         self.away = False
+        self.at_home = False
         self.posterior: dict[str, float] = {}
         self.last_window: Window | None = None
         self.last_room: str | None = None  # bleibt über „nicht da“ und Neustarts erhalten
@@ -222,6 +227,14 @@ class ManoumiTracker:
 
     # --- Erfassung -----------------------------------------------------------------------
 
+    def _state_of(self, entity_id: str | None) -> str | None:
+        state = self.hass.states.get(entity_id) if entity_id else None
+        return state.state if state is not None else None
+
+    @property
+    def presence_entity(self) -> str | None:
+        return self.entry.options.get(CONF_PRESENCE)
+
     def _current_address(self) -> str | None:
         state = self.hass.states.get(self.tracker_entity)
         if state is None:
@@ -271,13 +284,20 @@ class ManoumiTracker:
         if window.seen_count:
             self._last_heard = now
             self.last_seen = dt_util.utcnow()
-        elif now - self._last_heard >= AWAY_SECONDS and not self.away:
-            self.away = True
-            self.room = None
-            self.posterior = {}
-            self.explanation = None
-            self.decider.reset()
-            changed = rooms_changed = True
+        elif (silent := now - self._last_heard) >= AWAY_SECONDS:
+            home = silent_home(
+                self._state_of(self.presence_entity) if self.presence_entity else None,
+                self._state_of(self.tracker_entity),
+                silent,
+                HOME_HOLD_SECONDS,
+            )
+            if (self.at_home, self.away) != (home, not home):
+                self.at_home, self.away = home, not home
+                self.room = None
+                self.posterior = {}
+                self.explanation = None
+                self.decider.reset()
+                changed = rooms_changed = True
 
         cal = self.calibration
         if cal is not None:
@@ -301,9 +321,9 @@ class ManoumiTracker:
             changed = True
 
         if window.seen_count:
-            if self.away:
+            if self.away or self.at_home:
                 rooms_changed = True
-            self.away = False
+            self.away = self.at_home = False
             lls = self.model.log_likelihoods(window, set(self.areas))
             decision = self.decider.step(lls)
             if decision.room != self.room:
@@ -446,6 +466,9 @@ class ManoumiTracker:
             "tracker": self.tracker_entity,
             "areas": self.areas,
             "room": self.room,
+            "at_home": self.at_home,
+            "away": self.away,
+            "presence": self.presence_entity,
             "last_room": self.last_room,
             "posterior": self.posterior,
             "mode": self.mode,

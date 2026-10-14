@@ -30,6 +30,7 @@ from .const import (
     MODES,
     SERVICE_CALIBRATE,
     STATE_AWAY,
+    STATE_HOME,
 )
 from .entity import ManoumiEntity, TrackerEntity
 from .hub import ManoumiHub
@@ -93,12 +94,14 @@ class RoomSensor(TrackerEntity, SensorEntity):
 
     @property
     def options(self) -> list[str]:
-        return [self.tracker.area_name(a) for a in self.tracker.areas] + [STATE_AWAY]
+        return [self.tracker.area_name(a) for a in self.tracker.areas] + [STATE_HOME, STATE_AWAY]
 
     @property
     def native_value(self) -> str | None:
         if self.tracker.away:
             return STATE_AWAY
+        if self.tracker.at_home:
+            return STATE_HOME
         if self.tracker.room is None:
             return None
         return self.tracker.area_name(self.tracker.room)
@@ -173,13 +176,15 @@ class FloorSensor(TrackerEntity, SensorEntity):
 
     @property
     def options(self) -> list[str]:
-        return [f.name for f in self.tracker.floors()] + [STATE_AWAY]
+        return [f.name for f in self.tracker.floors()] + [STATE_HOME, STATE_AWAY]
 
     @property
     def native_value(self) -> str | None:
         t = self.tracker
         if t.away:
             return STATE_AWAY
+        if t.at_home:
+            return STATE_HOME
         floor = t.floor_of(t.room)
         return floor.name if floor else None
 

@@ -31,6 +31,7 @@ from .const import (
     CONF_AREAS,
     CONF_CAPTURE,
     CONF_NOTIFY_SERVICE,
+    CONF_PRESENCE,
     CONF_TRACKER,
     CONF_TYPE,
     DOMAIN,
@@ -60,6 +61,10 @@ def _notify_selector(hass: HomeAssistant) -> SelectSelector:
     )
 
 
+def _presence_selector() -> EntitySelector:
+    return EntitySelector(EntitySelectorConfig(domain=["person", "device_tracker"]))
+
+
 def _anchors_selector() -> DeviceSelector:
     return DeviceSelector(DeviceSelectorConfig(multiple=True))
 
@@ -68,6 +73,8 @@ def _device_options(user_input: dict[str, Any]) -> dict[str, Any]:
     options: dict[str, Any] = {CONF_AREAS: user_input[CONF_AREAS]}
     if user_input.get(CONF_NOTIFY_SERVICE):
         options[CONF_NOTIFY_SERVICE] = user_input[CONF_NOTIFY_SERVICE]
+    if user_input.get(CONF_PRESENCE):
+        options[CONF_PRESENCE] = user_input[CONF_PRESENCE]
     return options
 
 
@@ -120,6 +127,7 @@ class ManoumiConfigFlow(ConfigFlow, domain=DOMAIN):
                 vol.Required(CONF_TRACKER): _tracker_selector(),
                 vol.Required(CONF_AREAS, default=scanner_areas(self.hass)): _areas_selector(),
                 vol.Optional(CONF_NOTIFY_SERVICE): _notify_selector(self.hass),
+                vol.Optional(CONF_PRESENCE): _presence_selector(),
             }
         )
         return self.async_show_form(step_id="device", data_schema=schema, errors=errors)
@@ -161,6 +169,7 @@ class DeviceOptionsFlow(OptionsFlow):
             errors[CONF_AREAS] = "no_areas"
         options = self.config_entry.options
         notify = options.get(CONF_NOTIFY_SERVICE)
+        presence = options.get(CONF_PRESENCE)
         schema = vol.Schema(
             {
                 vol.Required(CONF_AREAS, default=options.get(CONF_AREAS, [])): _areas_selector(),
@@ -168,6 +177,10 @@ class DeviceOptionsFlow(OptionsFlow):
                     CONF_NOTIFY_SERVICE,
                     description={"suggested_value": notify} if notify else None,
                 ): _notify_selector(self.hass),
+                vol.Optional(
+                    CONF_PRESENCE,
+                    description={"suggested_value": presence} if presence else None,
+                ): _presence_selector(),
             }
         )
         tracker = getattr(self.config_entry, "runtime_data", None)

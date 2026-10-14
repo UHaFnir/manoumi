@@ -107,7 +107,12 @@ def device_status(hass: HomeAssistant, tracker: ManoumiTracker) -> str:
             )
             + " |"
         )
-    state = "nicht da" if tracker.away else (tracker.area_name(tracker.room) if tracker.room else "unbekannt")
+    if tracker.away:
+        state = "nicht da"
+    elif tracker.at_home:
+        state = "zuhause (Raum unbekannt, Bluetooth schweigt)"
+    else:
+        state = tracker.area_name(tracker.room) if tracker.room else "unbekannt"
     return "\n".join(
         [
             f"**Aktuell:** {state}",

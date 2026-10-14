@@ -49,6 +49,7 @@ Go to **Settings → Devices & Services → Add Integration** and search for "Ma
 2. Pick the Private BLE Device tracker of that phone.
 3. Choose the rooms. Rooms that contain a Bluetooth scanner are preselected, and you can add others.
 4. Optionally pick a notify service (e.g. `notify.mobile_app_…`). Calibration messages then also arrive as push notifications on your phone, which is handy because that's the device you're walking around with.
+5. Optionally pick a presence sensor as a fallback, ideally the person or the companion app's GPS tracker. Phones sometimes stop advertising for a few minutes (power saving). While Bluetooth is silent, MaNoUmi asks this sensor instead: *home* shows *Zuhause* (home, room unknown), anything else *Nicht da*. Without one, *Zuhause* holds while the Private BLE tracker is still home, for at most ten minutes.
 
 **Home** (optional, once per installation):
 
@@ -75,7 +76,7 @@ Per tracked device (attached to its Private BLE Device):
 
 | Entity | What it tells you |
 |---|---|
-| **Room** | The current room, or *Nicht da* (away) when no scanner has heard the device for a minute. Attributes include the confidence, a short explanation of the decision ("Office 82 % ahead of Hallway 12 % – decisive: Shelly Kitchen (−84 dBm)"), the last known room, when the device was last seen, and the calibration state of every room. |
+| **Room** | The current room. When no scanner has heard the device for a minute: *Zuhause* (home, room unknown) or *Nicht da* (away), see the presence fallback above. Attributes include the confidence, a short explanation of the decision ("Office 82 % ahead of Hallway 12 % – decisive: Shelly Kitchen (−84 dBm)"), the last known room, when the device was last seen, and the calibration state of every room. |
 | **Floor** | The floor of the current room, taken from your area/floor setup. |
 | **Calibrate** / **Calibration mode** | Start a calibration and choose between New and Add. |
 | **Reset learned data** | Go back to the plain calibration. |

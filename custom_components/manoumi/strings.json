@@ -16,11 +16,13 @@
           "name": "Name",
           "tracker": "Private-BLE-Tracker",
           "areas": "Räume",
-          "notify_service": "Benachrichtigung aufs Handy (optional)"
+          "notify_service": "Benachrichtigung aufs Handy (optional)",
+          "presence": "Anwesenheit als Fallback (optional)"
         },
         "data_description": {
           "areas": "Vorausgewählt sind die Räume mit Bluetooth-Scannern. Räume ohne Scanner können dazu – erkannt wird jeder Raum, sobald er einmal kalibriert ist.",
-          "notify_service": "Bei Start und Ende einer Kalibrierung kommt immer eine Benachrichtigung in Home Assistant. Mit einem notify-Dienst (z.B. notify.mobile_app_…) zusätzlich als Push aufs Handy."
+          "notify_service": "Bei Start und Ende einer Kalibrierung kommt immer eine Benachrichtigung in Home Assistant. Mit einem notify-Dienst (z.B. notify.mobile_app_…) zusätzlich als Push aufs Handy.",
+          "presence": "Nur wenn Bluetooth eine Minute lang schweigt (z.B. iPhone im Stromsparen): Meldet dieser Sensor „home“, zeigt der Raum „Zuhause“, sonst „Nicht da“. Ideal ist eine Person oder der GPS-Tracker der App – unabhängig von Bluetooth. Ohne Sensor gilt „Zuhause“, solange der Private-BLE-Tracker zuhause ist, höchstens 10 Minuten."
         }
       },
       "hub": {
@@ -51,11 +53,13 @@
         "data": {
           "areas": "Räume",
           "notify_service": "Benachrichtigung aufs Handy (optional)",
+          "presence": "Anwesenheit als Fallback (optional)",
           "anchors": "Referenzgeräte",
           "capture": "Messdaten aufzeichnen"
         },
         "data_description": {
           "notify_service": "Bei Start und Ende einer Kalibrierung kommt immer eine Benachrichtigung in Home Assistant. Mit einem notify-Dienst (z.B. notify.mobile_app_…) zusätzlich als Push aufs Handy.",
+          "presence": "Nur wenn Bluetooth eine Minute lang schweigt (z.B. iPhone im Stromsparen): Meldet dieser Sensor „home“, zeigt der Raum „Zuhause“, sonst „Nicht da“. Ideal ist eine Person oder der GPS-Tracker der App – unabhängig von Bluetooth. Ohne Sensor gilt „Zuhause“, solange der Private-BLE-Tracker zuhause ist, höchstens 10 Minuten.",
           "anchors": "Fest stehende Bluetooth-Geräte (z.B. Thermometer). Nicht bewegen; nach dem Umstellen „Ausgangslage neu aufnehmen“ drücken.",
           "capture": "Schreibt alle Messfenster (Referenzgeräte und verfolgte Geräte) nach /config/manoumi/capture.jsonl – für die Auswertung. Max. 20 MB, dann wird rotiert."
         },

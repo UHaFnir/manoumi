@@ -13,6 +13,7 @@ CONF_NOTIFY_SERVICE = "notify_service"
 CONF_TYPE = "type"
 CONF_ANCHORS = "anchors"
 CONF_CAPTURE = "capture"
+CONF_PRESENCE = "presence"
 
 TYPE_DEVICE = "device"
 TYPE_HUB = "hub"
@@ -24,7 +25,9 @@ SAVE_DELAY = 60  # s
 POLL_INTERVAL = 2.0  # s
 WINDOW_SECONDS = 6.0  # Länge eines Messfensters
 MAX_ADVERT_AGE = 10.0  # s – ältere Adverts eines Scanners zählen nicht
-AWAY_SECONDS = 60.0  # so lange kein Scanner etwas hört → „nicht da“
+AWAY_SECONDS = 60.0  # so lange kein Scanner etwas hört → Raum unbekannt („Zuhause“ / „Nicht da“)
+# Ohne Auskunft des Anwesenheitssensors hält der Private-BLE-Tracker „Zuhause“ höchstens so lange.
+HOME_HOLD_SECONDS = 600.0
 INVALID_RSSI = -127
 
 CALIBRATION_DEFAULT_SECONDS = 60  # Erstkalibrierung je Raum; Nachbessern gezielt per „Ergänzen“
@@ -37,6 +40,7 @@ MODES = [MODE_REPLACE, MODE_ADD]
 
 OPTION_OFF = "Aus"
 STATE_AWAY = "Nicht da"
+STATE_HOME = "Zuhause"  # Bluetooth schweigt, die Person ist aber noch da
 
 SERVICE_CALIBRATE = "calibrate"
 ATTR_ROOM = "room"
