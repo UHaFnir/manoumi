@@ -78,9 +78,6 @@
       },
       "personen": {
         "name": "Personen {area}"
-      },
-      "drift": {
-        "name": "Scanner-Drift"
       }
     },
     "select": {

@@ -1,4 +1,4 @@
-"""Sensoren: Raum und Etage je Gerät; Personen je Raum und Drift im Haus-Eintrag."""
+"""Sensoren: Raum und Etage je Gerät; Personen je Raum im Haus-Eintrag."""
 
 from __future__ import annotations
 
@@ -10,12 +10,12 @@ from homeassistant.components.sensor import (
     SensorEntity,
     SensorStateClass,
 )
-from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import area_registry as ar
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import entity_platform
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from . import ManoumiConfigEntry
@@ -26,13 +26,13 @@ from .const import (
     CALIBRATION_DEFAULT_SECONDS,
     CALIBRATION_MAX_SECONDS,
     CALIBRATION_MIN_SECONDS,
+    DOMAIN,
     MODES,
     SERVICE_CALIBRATE,
     STATE_AWAY,
 )
 from .entity import ManoumiEntity, TrackerEntity
 from .hub import ManoumiHub
-from .scanners import scanner_infos
 from .tracker import ManoumiTracker
 
 
@@ -44,9 +44,11 @@ async def async_setup_entry(
     owner = entry.runtime_data
     if isinstance(owner, ManoumiHub):
         areas = ar.async_get(hass).async_list_areas()
-        async_add_entities(
-            [OccupancySensor(owner, area.id, area.name) for area in areas] + [DriftSensor(owner)]
-        )
+        async_add_entities([OccupancySensor(owner, area.id, area.name) for area in areas])
+        # Der frühere Drift-Sensor war reine Anzeige (Drift steht im Status der Optionen).
+        registry = er.async_get(hass)
+        if old := registry.async_get_entity_id("sensor", DOMAIN, f"{entry.entry_id}_drift"):
+            registry.async_remove(old)
         return
 
     entities: list[SensorEntity] = [RoomSensor(owner)]
@@ -199,38 +201,3 @@ class OccupancySensor(ManoumiEntity, SensorEntity):
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
         return {"personen": self.owner.occupancy().get(self.area_id_, [])}
-
-
-class DriftSensor(ManoumiEntity, SensorEntity):
-    """Größte Drift eines Scanners laut Referenzgeräten (0 = alles wie bei der Ausgangslage)."""
-
-    _attr_entity_category = EntityCategory.DIAGNOSTIC
-    _attr_native_unit_of_measurement = "dB"
-    _attr_state_class = SensorStateClass.MEASUREMENT
-    _attr_suggested_display_precision = 1
-    _unrecorded_attributes = frozenset({"drift_je_scanner", "referenzgeraete"})
-
-    def __init__(self, hub: ManoumiHub) -> None:
-        super().__init__(hub, "drift")
-
-    @property
-    def native_value(self) -> float | None:
-        drift = self.owner.drift
-        if not drift:
-            return None if not self.owner.anchor_devices else 0.0
-        return max(drift.values(), key=abs)
-
-    @property
-    def extra_state_attributes(self) -> dict[str, Any]:
-        infos = scanner_infos(self.hass)
-        anchors = self.owner.anchor_addresses()
-        return {
-            "drift_je_scanner": {
-                (infos[s].name if s in infos else s): round(d, 1)
-                for s, d in sorted(self.owner.drift.items(), key=lambda i: -abs(i[1]))
-            },
-            "referenzgeraete": {
-                name: f"von {self.owner.anchor_seen.get(addr, 0)} Scannern gehört"
-                for addr, name in anchors.items()
-            },
-        }

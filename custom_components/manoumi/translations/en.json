@@ -78,9 +78,6 @@
       },
       "personen": {
         "name": "People {area}"
-      },
-      "drift": {
-        "name": "Scanner drift"
       }
     },
     "select": {

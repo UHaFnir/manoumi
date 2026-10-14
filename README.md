@@ -85,8 +85,7 @@ For the Home entry:
 | Entity | What it tells you |
 |---|---|
 | **People ‹room›** | How many tracked devices are in that room right now, and which ones. |
-| **Scanner drift** | How far the scanners have drifted from the baseline recorded with your reference devices. |
-| **Re-capture baseline** | Use after moving a reference device. |
+| **Re-capture baseline** | Use after moving a reference device. The current drift per scanner is shown in the Home entry's options. |
 
 There is also an action, `manoumi.calibrate` (room, mode, duration), so you can start a calibration from a dashboard button or a script.
 
