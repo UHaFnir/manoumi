@@ -518,7 +518,7 @@ SWITCH_PROB = 0.05
 POSTERIOR_FLOOR = 1e-4
 # Raumwechsel: neuer Raum muss so viele Fenster in Folge mit mindestens dieser Wahrscheinlichkeit vorn liegen.
 SWITCH_MIN_POSTERIOR = 0.6
-CONFIRM_WINDOWS = 2
+CONFIRM_WINDOWS = 3  # Replay: halbiert kurze Fehlwechsel (<60 s) gegenüber 2, kostet 6 s
 # Selbstlernen nur bei sicherer, stabiler Erkennung.
 LEARN_MIN_POSTERIOR = 0.9
 LEARN_MIN_MARGIN = 0.8
